@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;600;700;800&display=swap');
+        
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .inset-button {
+            box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.2), inset 0 -1px 0 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .soft-glow:focus-within {
+            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-primary": "#ffffff",
+                      "inverse-surface": "#313030",
+                      "surface-dim": "#ddd9d8",
+                      "background-cream": "#f7f4ed",
+                      "background": "#fdf8f8",
+                      "on-secondary-fixed-variant": "#474742",
+                      "on-tertiary-fixed-variant": "#484645",
+                      "border-interactive": "rgba(28, 28, 28, 0.4)",
+                      "on-error": "#ffffff",
+                      "text-muted": "#5f5f5d",
+                      "inverse-primary": "#c8c6c5",
+                      "secondary-fixed-dim": "#c9c6c0",
+                      "surface-container-lowest": "#ffffff",
+                      "border-passive": "#eceae4",
+                      "on-error-container": "#93000a",
+                      "surface-bright": "#fdf8f8",
+                      "primary-fixed-dim": "#c8c6c5",
+                      "outline": "#747878",
+                      "on-secondary-fixed": "#1c1c18",
+                      "on-primary-container": "#858484",
+                      "surface-variant": "#e5e2e1",
+                      "on-tertiary-fixed": "#1c1b1a",
+                      "on-tertiary": "#ffffff",
+                      "off-white": "#fcfbf8",
+                      "surface-container-low": "#f7f3f2",
+                      "surface-container-high": "#ebe7e6",
+                      "on-background": "#1c1b1b",
+                      "error-container": "#ffdad6",
+                      "secondary-container": "#e5e2db",
+                      "on-surface-variant": "#444748",
+                      "tertiary": "#010101",
+                      "text-charcoal": "#1c1c1c",
+                      "on-primary-fixed": "#1b1b1b",
+                      "tertiary-fixed-dim": "#cac6c4",
+                      "on-secondary": "#ffffff",
+                      "surface": "#fdf8f8",
+                      "tertiary-container": "#1d1c1b",
+                      "on-primary-fixed-variant": "#474746",
+                      "charcoal-83": "rgba(28, 28, 28, 0.83)",
+                      "outline-variant": "#c4c7c7",
+                      "ring-blue": "rgba(59, 130, 246, 0.5)",
+                      "primary": "#010101",
+                      "on-surface": "#1c1b1b",
+                      "surface-container-highest": "#e5e2e1",
+                      "primary-fixed": "#e5e2e1",
+                      "tertiary-fixed": "#e6e2df",
+                      "secondary-fixed": "#e5e2db",
+                      "charcoal-4": "rgba(28, 28, 28, 0.04)",
+                      "surface-tint": "#5f5e5e",
+                      "error": "#ba1a1a",
+                      "secondary": "#5f5e59",
+                      "inverse-on-surface": "#f4f0ef",
+                      "primary-container": "#1c1c1c",
+                      "on-secondary-container": "#65645f",
+                      "charcoal-3": "rgba(28, 28, 28, 0.03)",
+                      "on-tertiary-container": "#878482",
+                      "surface-container": "#f1edec"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "xl": "32px",
+                      "section-sm": "80px",
+                      "section-lg": "192px",
+                      "base": "8px",
+                      "section-md": "128px",
+                      "max-width": "1200px",
+                      "xs": "8px",
+                      "sm": "12px",
+                      "md": "16px",
+                      "lg": "24px"
+              },
+              "fontFamily": {
+                      "display-hero": ["Fira Sans"],
+                      "body": ["Fira Sans"],
+                      "body-large": ["Fira Sans"],
+                      "section-heading": ["Fira Sans"],
+                      "display-hero-mobile": ["Fira Sans"],
+                      "sub-heading": ["Fira Sans"],
+                      "caption": ["Fira Sans"],
+                      "card-title": ["Fira Sans"]
+              },
+              "fontSize": {
+                      "display-hero": ["60px", {"lineHeight": "1.05", "letterSpacing": "-1.5px", "fontWeight": "600"}],
+                      "body": ["16px", {"lineHeight": "1.5", "letterSpacing": "normal", "fontWeight": "400"}],
+                      "body-large": ["18px", {"lineHeight": "1.38", "letterSpacing": "normal", "fontWeight": "400"}],
+                      "section-heading": ["48px", {"lineHeight": "1.0", "letterSpacing": "-1.2px", "fontWeight": "600"}],
+                      "display-hero-mobile": ["36px", {"lineHeight": "1.1", "letterSpacing": "-0.9px", "fontWeight": "600"}],
+                      "sub-heading": ["36px", {"lineHeight": "1.1", "letterSpacing": "-0.9px", "fontWeight": "600"}],
+                      "caption": ["14px", {"lineHeight": "1.5", "letterSpacing": "normal", "fontWeight": "400"}],
+                      "card-title": ["20px", {"lineHeight": "1.25", "letterSpacing": "normal", "fontWeight": "400"}]
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="bg-background-cream text-text-charcoal font-body antialiased selection:bg-secondary-container">
+<!-- TopNavBar Component -->
+<header class="bg-background-cream dark:bg-inverse-surface border-b border-border-passive dark:border-on-surface-variant docked full-width top-0 sticky z-50 transition-all duration-200 ease-in-out">
+<nav class="flex justify-between items-center px-lg py-md max-w-max-width mx-auto">
+<div class="font-card-title text-card-title font-semibold text-text-charcoal dark:text-off-white">
+                RoboMission Inspo
+            </div>
+<div class="flex items-center gap-md">
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-text-muted" data-icon="search">search</span>
+<input class="bg-surface-container-low border border-border-passive rounded-lg pl-xl pr-md py-xs text-caption focus:ring-2 focus:ring-ring-blue focus:outline-none transition-shadow duration-200" placeholder="Search research..." type="text"/>
+</div>
+<button class="p-xs hover:bg-charcoal-4 rounded-lg transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined text-text-charcoal dark:text-off-white" data-icon="settings">settings</span>
+</button>
+</div>
+</nav>
+</header>
+<!-- Hero Section -->
+<main>
+<section class="max-w-max-width mx-auto px-lg pt-section-md pb-section-sm text-center">
+<h1 class="font-display-hero text-display-hero text-text-charcoal tracking-tight">
+                RoboMission Inspo
+            </h1>
+<p class="font-body-large text-body-large text-text-muted mt-md max-w-2xl mx-auto">
+                A curated digital laboratory documenting the evolution of humanoid robotics and autonomous systems.
+            </p>
+<div class="mt-xl flex justify-center gap-md">
+<button class="bg-primary text-on-primary px-lg py-md rounded-lg font-body font-semibold inset-button hover:opacity-90 transition-opacity">
+                    Add New Study
+                </button>
+<button class="border border-border-interactive px-lg py-md rounded-lg font-body font-normal hover:bg-charcoal-4 transition-colors">
+                    Filter Topics
+                </button>
+</div>
+</section>
+<!-- Research Grid -->
+<section class="max-w-max-width mx-auto px-lg pb-section-lg">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-xl">
+<!-- Research Card 1 -->
+<article class="flex flex-col gap-md border border-border-passive rounded-xl p-lg bg-background-cream">
+<div class="flex justify-between items-start">
+<h2 class="font-card-title text-card-title text-text-charcoal font-normal">
+                            Bipedal Balance in Dynamic Environments
+                        </h2>
+<span class="material-symbols-outlined text-text-muted" data-icon="more_vert">more_vert</span>
+</div>
+<div class="relative aspect-video bg-charcoal-3 rounded-lg overflow-hidden border border-border-passive">
+<div class="absolute inset-0 flex items-center justify-center">
+<!-- Video Placeholder Iframe Mockup -->
+<div class="w-full h-full bg-surface-dim flex items-center justify-center">
+<img alt="Robotics Research" class="w-full h-full object-cover opacity-60" data-alt="A high-tech robotics laboratory where a sleek humanoid robot is practicing balance on an uneven treadmill. The lighting is soft and cinematic, with warm amber highlights against a cool gray industrial background. The scene is captured in a wide editorial shot that emphasizes the robot's sophisticated joints and the minimalist, clean environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDh5mxHu6p9BM0MyXVdBsvgEokS4q1_eWZCv0fLsBDRH-NhgRXVyBajkWAv27BBRD0LT0SnfykMs6ayvLD0YPXojZpOgA80g9XrtGYS01DQwy-ea6LTXX3BBPUhBZ6U_9QPslWsjk8d9tOklJpBlPjvXUYFt8mME6f9JvjVw43a6Na5HP83VNVCAkl-ctWFTsJ5iOdLzjjYG3gZ9I4oqlqZk45oAV2NKDcAEeQd7X9rpQDBPv2RsRiTY5s_ruI57V79QdJYlZKUGYY"/>
+<div class="absolute inset-0 bg-black/10 flex items-center justify-center">
+<div class="w-16 h-16 bg-white/90 rounded-full flex items-center justify-center shadow-lg cursor-pointer hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="play_arrow" data-weight="fill" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="flex flex-wrap gap-xs mb-sm">
+<span class="px-sm py-1 border border-border-passive rounded-full text-caption text-text-muted hover:bg-surface-container-low cursor-pointer transition-colors">#Bipedal</span>
+<span class="px-sm py-1 border border-border-passive rounded-full text-caption text-text-muted hover:bg-surface-container-low cursor-pointer transition-colors">#Stability</span>
+<span class="px-sm py-1 border border-border-passive rounded-full text-caption text-text-muted hover:bg-surface-container-low cursor-pointer transition-colors">#Control-Systems</span>
+</div><div class="flex flex-col gap-sm soft-glow">
+<label class="font-caption text-caption text-text-muted uppercase tracking-wider">Research Notes</label>
+<textarea class="w-full min-h-[120px] bg-background-cream border border-border-passive rounded-lg p-md font-body text-body text-text-charcoal focus:ring-2 focus:ring-ring-blue focus:outline-none transition-all resize-none" placeholder="Observe gait stability during lateral perturbations..."></textarea>
+<div class="flex justify-end gap-sm">
+<button class="bg-primary text-on-primary px-md py-xs rounded-lg text-caption font-semibold inset-button hover:opacity-90 transition-opacity">
+                                Save Notes
+                            </button>
+</div>
+</div>
+</article>
+<!-- Research Card 2 -->
+<article class="flex flex-col gap-md border border-border-passive rounded-xl p-lg bg-background-cream">
+<div class="flex justify-between items-start">
+<h2 class="font-card-title text-card-title text-text-charcoal font-normal">
+                            Soft Robotic Actuators: Haptic Feedback Study
+                        </h2>
+<span class="material-symbols-outlined text-text-muted" data-icon="more_vert">more_vert</span>
+</div>
+<div class="relative aspect-video bg-charcoal-3 rounded-lg overflow-hidden border border-border-passive">
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="w-full h-full bg-surface-dim flex items-center justify-center">
+<img alt="Soft Robotics" class="w-full h-full object-cover opacity-60" data-alt="A close-up shot of a translucent soft robotic hand gently interacting with a delicate glass sphere. The aesthetic is clean and surgical, with a soft parchment-toned lighting that eliminates harsh shadows. The color palette consists of muted silvers, soft creams, and deep charcoal backgrounds, conveying a mood of precision and high-tech elegance." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8vTLLQETApmzf0zow9R4GLh7hLKby-_64B7jMErIfKBW2w3mUb1vLAa62YqDTAS80kaJy9SM_E1uKTgPsMUnMGb-M9KCrJoivv4bXu2DGCfZhETwOCCbhuXz7PuB0BPSjCvrINdGywky5wCMeTptE5-0NelpOKsuOlqvaafiZKtqxMA2VFlHlrqHWZLTcwxnJtEc1A6Pn-p01fEEPhX0WzPL-jgfoOVR6bk--40Tu-0cLCb00e6P9PWJM9t9EZkBeXRZmV_njStQ"/>
+<div class="absolute inset-0 bg-black/10 flex items-center justify-center">
+<div class="w-16 h-16 bg-white/90 rounded-full flex items-center justify-center shadow-lg cursor-pointer hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="play_arrow" data-weight="fill" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="flex flex-wrap gap-xs mb-sm">
+<span class="px-sm py-1 border border-border-passive rounded-full text-caption text-text-muted hover:bg-surface-container-low cursor-pointer transition-colors">#Soft-Robotics</span>
+<span class="px-sm py-1 border border-border-passive rounded-full text-caption text-text-muted hover:bg-surface-container-low cursor-pointer transition-colors">#Haptics</span>
+<span class="px-sm py-1 border border-border-passive rounded-full text-caption text-text-muted hover:bg-surface-container-low cursor-pointer transition-colors">#Sensors</span>
+</div><div class="flex flex-col gap-sm soft-glow">
+<label class="font-caption text-caption text-text-muted uppercase tracking-wider">Research Notes</label>
+<textarea class="w-full min-h-[120px] bg-background-cream border border-border-passive rounded-lg p-md font-body text-body text-text-charcoal focus:ring-2 focus:ring-ring-blue focus:outline-none transition-all resize-none" placeholder="Initial findings on pressure sensitivity vs pneumatic response..."></textarea>
+<div class="flex justify-end gap-sm">
+<button class="bg-primary text-on-primary px-md py-xs rounded-lg text-caption font-semibold inset-button hover:opacity-90 transition-opacity">
+                                Save Notes
+                            </button>
+</div>
+</div>
+</article>
+</div>
+</section>
+</main>
+</body></html>

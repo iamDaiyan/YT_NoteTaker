@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <title>RoboMission Inspo</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet" />
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;600&display=swap");
+
+    .material-symbols-outlined {
+      font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+    }
+
+    .inset-button {
+      box-shadow:
+        rgba(255, 255, 255, 0.2) 0 0.5px 0 0 inset,
+        rgba(0, 0, 0, 0.2) 0 0 0 0.5px inset,
+        rgba(0, 0, 0, 0.05) 0 1px 2px 0;
+    }
+
+    .soft-glow:focus-within {
+      box-shadow: rgba(0, 0, 0, 0.1) 0 4px 12px;
+    }
+
+    .notes-editor {
+      min-height: 8.5rem;
+      outline: none;
+    }
+
+    .notes-editor:empty::before {
+      content: attr(data-placeholder);
+      color: #5f5f5d;
+      pointer-events: none;
+    }
+
+    .notes-editor ul {
+      list-style: disc;
+      padding-left: 1.25rem;
+      margin: 0.25rem 0;
+    }
+
+    .notes-editor p {
+      margin: 0.25rem 0;
+    }
+
+    .notes-editor strong {
+      font-weight: 600;
+    }
+
+    .notes-editor u {
+      text-decoration: underline;
+      text-underline-offset: 0.12em;
+    }
+
+    .toolbar-btn.active {
+      background: rgba(28, 28, 28, 0.06);
+      border-color: rgba(28, 28, 28, 0.4);
+    }
+  </style>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "on-primary": "#ffffff",
+            "inverse-surface": "#313030",
+            "surface-dim": "#ddd9d8",
+            "background-cream": "#f7f4ed",
+            background: "#fdf8f8",
+            "border-interactive": "rgba(28, 28, 28, 0.4)",
+            "text-muted": "#5f5f5d",
+            "border-passive": "#eceae4",
+            "off-white": "#fcfbf8",
+            "surface-container-low": "#f7f3f2",
+            "text-charcoal": "#1c1c1c",
+            "ring-blue": "rgba(59, 130, 246, 0.5)",
+            primary: "#010101",
+            "charcoal-4": "rgba(28, 28, 28, 0.04)",
+            "charcoal-3": "rgba(28, 28, 28, 0.03)",
+            "secondary-container": "#e5e2db",
+          },
+          borderRadius: {
+            DEFAULT: "0.25rem",
+            lg: "0.5rem",
+            xl: "0.75rem",
+            "2xl": "1rem",
+            full: "9999px",
+          },
+          spacing: {
+            xl: "32px",
+            "section-sm": "80px",
+            "section-lg": "192px",
+            "section-md": "128px",
+            "max-width": "1200px",
+            xs: "8px",
+            sm: "12px",
+            md: "16px",
+            lg: "24px",
+          },
+          fontFamily: {
+            body: ["Fira Sans", "ui-sans-serif", "system-ui", "sans-serif"],
+            "card-title": ["Fira Sans", "ui-sans-serif", "system-ui", "sans-serif"],
+            caption: ["Fira Sans", "ui-sans-serif", "system-ui", "sans-serif"],
+          },
+          fontSize: {
+            body: ["16px", { lineHeight: "1.5", letterSpacing: "normal", fontWeight: "400" }],
+            "body-large": ["18px", { lineHeight: "1.38", letterSpacing: "normal", fontWeight: "400" }],
+            caption: ["14px", { lineHeight: "1.5", letterSpacing: "normal", fontWeight: "400" }],
+            "card-title": ["20px", { lineHeight: "1.25", letterSpacing: "normal", fontWeight: "400" }],
+            "section-heading": ["48px", { lineHeight: "1.0", letterSpacing: "-1.2px", fontWeight: "600" }],
+          },
+        },
+      },
+    };
+  </script>
+</head>
+<body class="bg-background-cream text-text-charcoal font-body antialiased selection:bg-secondary-container min-h-screen">
+  <header class="bg-background-cream border-b border-border-passive sticky top-0 z-50">
+    <nav class="flex flex-wrap justify-between items-center gap-md px-lg py-md max-w-max-width mx-auto">
+      <div class="font-card-title text-card-title font-semibold text-text-charcoal tracking-tight">
+        RoboMission Inspo
+      </div>
+      <div class="flex items-center gap-sm sm:gap-md flex-1 sm:flex-initial justify-end">
+        <div class="relative flex-1 max-w-xs min-w-[10rem] hidden sm:block">
+          <span class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-text-muted text-xl" aria-hidden="true">search</span>
+          <input
+            id="filter-input"
+            class="w-full bg-surface-container-low border border-border-passive rounded-lg pl-10 pr-md py-xs text-caption text-text-charcoal placeholder:text-text-muted focus:ring-2 focus:ring-ring-blue focus:outline-none transition-shadow"
+            type="search"
+            placeholder="Filter by title…"
+            autocomplete="off"
+          />
+        </div>
+        <button
+          id="add-video-btn"
+          type="button"
+          class="bg-primary text-off-white px-md py-xs sm:px-lg sm:py-md rounded-lg text-caption sm:text-body font-semibold inset-button hover:opacity-90 transition-opacity whitespace-nowrap"
+        >
+          Add video
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <aside
+    id="file-origin-notice"
+    hidden
+    class="max-w-max-width mx-auto px-lg pt-lg"
+    role="status"
+    aria-live="polite"
+  >
+    <div class="rounded-lg border border-border-interactive bg-surface-container-low px-md py-sm text-caption text-text-muted">
+      Embedded playback expects a proper HTTP referrer. Opening this HTML from disk can trigger YouTube
+      <strong class="font-semibold text-text-charcoal">Error 153</strong>. Serve this folder locally — for example, in PowerShell from <code class="font-body text-text-charcoal select-all">'c:\\RoboMission'</code>:
+      <code class="block mt-sm font-body text-text-charcoal whitespace-pre-wrap rounded bg-charcoal-3 px-sm py-xs border border-border-passive select-all">
+        cd c:\RoboMission; python -m http.server 8080
+      </code>
+      <span class="block mt-sm">Then open <code class="font-body text-text-charcoal select-all">http://127.0.0.1:8080/</code>.</span>
+    </div>
+  </aside>
+
+  <main>
+    <section class="max-w-max-width mx-auto px-lg pt-lg pb-md">
+      <p class="font-body text-body text-text-muted max-w-2xl">
+        Embed reference clips and capture structured notes in one place. Formatting is saved in your browser.
+      </p>
+    </section>
+
+    <section class="max-w-max-width mx-auto px-lg pb-section-lg">
+      <div id="card-grid" class="grid grid-cols-1 gap-xl"></div>
+      <p id="empty-state" class="hidden text-center text-text-muted text-body py-section-sm border border-dashed border-border-passive rounded-2xl">
+        No videos yet. Use <strong class="text-text-charcoal font-semibold">Add video</strong> with a YouTube link.
+      </p>
+      <p id="no-matches-state" class="hidden text-center text-text-muted text-body py-xl">
+        No entries match your filter.
+      </p>
+    </section>
+  </main>
+
+  <template id="card-template">
+    <article class="research-card border border-border-passive rounded-2xl p-lg bg-background-cream" data-video-id="">
+      <div class="flex justify-between items-start gap-sm">
+        <h2 class="font-card-title text-card-title text-text-charcoal font-normal card-title"></h2>
+        <button
+          type="button"
+          class="remove-card p-xs hover:bg-charcoal-4 rounded-lg transition-colors text-text-muted hover:text-text-charcoal shrink-0"
+          aria-label="Remove video"
+        >
+          <span class="material-symbols-outlined text-xl">close</span>
+        </button>
+      </div>
+      <div class="mt-md grid grid-cols-1 lg:grid-cols-5 gap-lg lg:gap-xl">
+        <div class="lg:col-span-3 space-y-md">
+          <div class="relative aspect-video bg-charcoal-3 rounded-lg overflow-hidden border border-border-passive">
+            <iframe
+              class="absolute inset-0 w-full h-full border-0"
+              title="YouTube embed"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+              allowfullscreen
+              referrerpolicy="strict-origin-when-cross-origin"
+            ></iframe>
+          </div>
+        </div>
+        <div class="lg:col-span-2 flex flex-col gap-sm soft-glow min-h-0">
+          <label class="font-caption text-caption text-text-muted uppercase tracking-wider">Notes</label>
+          <div
+            class="flex flex-wrap gap-xs pb-xs border-b border-border-passive editor-toolbar"
+            role="toolbar"
+            aria-label="Text formatting"
+          >
+            <button type="button" data-cmd="bold" class="toolbar-btn px-sm py-1 rounded-lg border border-border-passive text-caption hover:bg-charcoal-4 transition-colors font-semibold" title="Bold">
+              B
+            </button>
+            <button type="button" data-cmd="italic" class="toolbar-btn px-sm py-1 rounded-lg border border-border-passive text-caption hover:bg-charcoal-4 transition-colors italic" title="Italic">
+              I
+            </button>
+            <button type="button" data-cmd="underline" class="toolbar-btn px-sm py-1 rounded-lg border border-border-passive text-caption hover:bg-charcoal-4 transition-colors underline" title="Underline">
+              U
+            </button>
+            <button type="button" data-cmd="insertUnorderedList" class="toolbar-btn px-sm py-1 rounded-lg border border-border-passive text-caption hover:bg-charcoal-4 transition-colors" title="Bullet list">
+              • List
+            </button>
+          </div>
+          <div
+            class="notes-editor w-full flex-1 bg-background-cream border border-border-passive rounded-lg p-md font-body text-body text-text-charcoal focus:ring-2 focus:ring-ring-blue transition-all overflow-y-auto"
+            contenteditable="true"
+            spellcheck="true"
+            data-placeholder="Timestamps, hypotheses, citations…"
+            role="textbox"
+            aria-multiline="true"
+          ></div>
+          <div class="flex justify-end gap-sm pt-xs">
+            <span class="save-status text-caption text-text-muted mr-auto self-center" aria-live="polite"></span>
+            <button
+              type="button"
+              class="save-notes bg-primary text-off-white px-md py-xs rounded-lg text-caption font-semibold inset-button hover:opacity-90 transition-opacity"
+            >
+              Save notes
+            </button>
+          </div>
+        </div>
+      </div>
+    </article>
+  </template>
+
+  <script>
+    (function () {
+      const STORAGE_VIDEOS = "robo-inspo-videos";
+      const STORAGE_NOTES = "robo-inspo-notes";
+
+      const defaultVideos = [
+        { id: "F_7IPm7f1vI", title: "Atlas Goes Hands On" },
+        { id: "29ECwExc-_M", title: "All New Atlas | Boston Dynamics" },
+        { id: "fn3KWM1kuAw", title: "Do You Love Me?" },
+      ];
+
+      function buildYouTubeEmbedUrl(videoId) {
+        var base = "https://www.youtube-nocookie.com/embed/" + encodeURIComponent(videoId);
+        var params = new URLSearchParams({
+          rel: "0",
+          modestbranding: "1",
+          playsinline: "1",
+          enablejsapi: "1",
+        });
+        if (typeof location !== "undefined" && (location.protocol === "http:" || location.protocol === "https:")) {
+          params.set("origin", location.origin);
+        }
+        return base + "?" + params.toString();
+      }
+
+      function extractYouTubeId(input) {
+        if (!input || typeof input !== "string") return null;
+        const trimmed = input.trim();
+        const direct = /^[a-zA-Z0-9_-]{11}$/.exec(trimmed);
+        if (direct) return direct[0];
+        try {
+          const u = new URL(trimmed);
+          const host = u.hostname.replace(/^www\./, "");
+          if (host === "youtu.be") {
+            const p = u.pathname.split("/").filter(Boolean)[0];
+            return p && /^[a-zA-Z0-9_-]{11}$/.test(p) ? p : null;
+          }
+          if (host === "youtube.com" || host === "m.youtube.com") {
+            const v = u.searchParams.get("v");
+            if (v && /^[a-zA-Z0-9_-]{11}$/.test(v)) return v;
+            const embed = u.pathname.match(/^\/embed\/([a-zA-Z0-9_-]{11})/);
+            if (embed) return embed[1];
+          }
+        } catch {
+          return null;
+        }
+        return null;
+      }
+
+      function loadVideos() {
+        try {
+          const raw = localStorage.getItem(STORAGE_VIDEOS);
+          if (!raw) return defaultVideos.slice();
+          const parsed = JSON.parse(raw);
+          if (!Array.isArray(parsed) || parsed.length === 0) return defaultVideos.slice();
+          return parsed
+            .filter(function (v) {
+              return v && typeof v.id === "string" && v.id.length === 11;
+            })
+            .map(function (v) {
+              return { id: v.id, title: typeof v.title === "string" ? v.title : "Untitled" };
+            });
+        } catch {
+          return defaultVideos.slice();
+        }
+      }
+
+      function saveVideos(list) {
+        localStorage.setItem(STORAGE_VIDEOS, JSON.stringify(list));
+      }
+
+      function loadNote(videoId) {
+        try {
+          const raw = localStorage.getItem(STORAGE_NOTES);
+          if (!raw) return "";
+          const all = JSON.parse(raw);
+          return typeof all[videoId] === "string" ? all[videoId] : "";
+        } catch {
+          return "";
+        }
+      }
+
+      function saveNote(videoId, html) {
+        try {
+          const raw = localStorage.getItem(STORAGE_NOTES);
+          let all = raw ? JSON.parse(raw) : {};
+          if (typeof all !== "object" || all === null) all = {};
+          all[videoId] = html;
+          localStorage.setItem(STORAGE_NOTES, JSON.stringify(all));
+        } catch (e) {
+          console.warn("Could not save notes", e);
+        }
+      }
+
+      var videos = loadVideos();
+      const grid = document.getElementById("card-grid");
+      const emptyState = document.getElementById("empty-state");
+      const noMatchesState = document.getElementById("no-matches-state");
+      const template = document.getElementById("card-template");
+      const filterInput = document.getElementById("filter-input");
+      const addBtn = document.getElementById("add-video-btn");
+
+      function persistNotesForEditor(editor, videoId, statusEl) {
+        saveNote(videoId, editor.innerHTML);
+        if (statusEl) {
+          statusEl.textContent = "Saved";
+          clearTimeout(statusEl._t);
+          statusEl._t = setTimeout(function () {
+            statusEl.textContent = "";
+          }, 2000);
+        }
+      }
+
+      function wireEditorToolbar(toolbar, editor) {
+        toolbar.querySelectorAll(".toolbar-btn").forEach(function (btn) {
+          btn.addEventListener("mousedown", function (e) {
+            e.preventDefault();
+          });
+          btn.addEventListener("click", function () {
+            const cmd = btn.getAttribute("data-cmd");
+            if (!cmd) return;
+            editor.focus();
+            try {
+              document.execCommand(cmd, false, null);
+            } catch {
+              /* ignore */
+            }
+            updateToolbarState(toolbar, editor);
+          });
+        });
+        editor.addEventListener("keyup", function () {
+          updateToolbarState(toolbar, editor);
+        });
+        editor.addEventListener("mouseup", function () {
+          updateToolbarState(toolbar, editor);
+        });
+      }
+
+      function updateToolbarState(toolbar, editor) {
+        toolbar.querySelectorAll(".toolbar-btn").forEach(function (btn) {
+          const cmd = btn.getAttribute("data-cmd");
+          let on = false;
+          try {
+            on = document.queryCommandState(cmd);
+          } catch {
+            on = false;
+          }
+          btn.classList.toggle("active", on);
+        });
+      }
+
+      function createCard(entry) {
+        const node = template.content.firstElementChild.cloneNode(true);
+        node.dataset.videoId = entry.id;
+
+        node.querySelector(".card-title").textContent = entry.title;
+
+        const iframe = node.querySelector("iframe");
+        iframe.title = "YouTube: " + entry.title;
+        iframe.src = buildYouTubeEmbedUrl(entry.id);
+
+        const editor = node.querySelector(".notes-editor");
+        const saved = loadNote(entry.id);
+        if (saved) editor.innerHTML = saved;
+
+        const toolbar = node.querySelector(".editor-toolbar");
+        wireEditorToolbar(toolbar, editor);
+
+        const statusEl = node.querySelector(".save-status");
+
+        node.querySelector(".save-notes").addEventListener("click", function () {
+          persistNotesForEditor(editor, entry.id, statusEl);
+        });
+
+        editor.addEventListener("blur", function () {
+          persistNotesForEditor(editor, entry.id, null);
+        });
+
+        node.querySelector(".remove-card").addEventListener("click", function () {
+          if (!confirm("Remove this video from the list? Saved notes stay in your browser unless you clear site data.")) return;
+          videos = videos.filter(function (v) {
+            return v.id !== entry.id;
+          });
+          saveVideos(videos);
+          renderAll();
+        });
+
+        return node;
+      }
+
+      function renderAll() {
+        grid.innerHTML = "";
+        var q = filterInput && filterInput.value ? filterInput.value.trim().toLowerCase() : "";
+        var rendered = 0;
+        videos.forEach(function (v) {
+          if (q && v.title.toLowerCase().indexOf(q) === -1) return;
+          grid.appendChild(createCard(v));
+          rendered++;
+        });
+        var libraryEmpty = videos.length === 0;
+        emptyState.classList.toggle("hidden", !libraryEmpty);
+        var filtering = !!(q.length > 0);
+        noMatchesState.classList.toggle("hidden", libraryEmpty || !filtering || rendered > 0);
+      }
+
+      renderAll();
+
+      if (filterInput) {
+        filterInput.addEventListener("input", renderAll);
+      }
+
+      if (typeof location !== "undefined" && location.protocol === "file:") {
+        var note = document.getElementById("file-origin-notice");
+        if (note) note.hidden = false;
+      }
+
+      addBtn.addEventListener("click", function () {
+        var url = window.prompt("Paste a YouTube URL or 11-character video ID:");
+        var id = extractYouTubeId(url || "");
+        if (!id) {
+          if (url !== null) window.alert("Could not parse a valid YouTube video ID.");
+          return;
+        }
+        if (videos.some(function (v) { return v.id === id; })) {
+          window.alert("That video is already in your library.");
+          return;
+        }
+        var title = window.prompt("Title for this entry:", "New reference") || "Untitled";
+        videos.push({ id: id, title: title.trim() });
+        saveVideos(videos);
+        renderAll();
+      });
+    })();
+  </script>
+</body>
+</html>
