@@ -1,32 +1,49 @@
 "use client";
 
-import { signIn } from "next-auth/react";
-import { FormEvent, useState } from "react";
+import { isSupabaseConfigured, supabase } from "@/lib/supabase";
+import { FormEvent, useEffect, useState } from "react";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (!isSupabaseConfigured) return;
+
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) window.location.href = "/";
+    });
+  }, []);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
+    setMessage("");
+
+    if (!isSupabaseConfigured) {
+      setError("Supabase is not configured yet.");
+      return;
+    }
+
     setSubmitting(true);
 
-    const result = await signIn("credentials", {
+    const { error: signInError } = await supabase.auth.signInWithOtp({
       email,
-      redirect: false,
-      callbackUrl: "/",
+      options: {
+        emailRedirectTo: `${window.location.origin}/`,
+      },
     });
 
     setSubmitting(false);
 
-    if (result?.error) {
-      setError("Enter a valid email address.");
+    if (signInError) {
+      setError(signInError.message);
       return;
     }
 
-    window.location.href = result?.url ?? "/";
+    setMessage("Check your email for the login link.");
   }
 
   return (
@@ -34,7 +51,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md rounded-2xl border border-border-passive bg-background-cream px-lg py-section-md text-center shadow-[0_4px_12px_rgba(0,0,0,0.06)]">
         <p className="font-card-title text-card-title tracking-tight text-text-charcoal">RoboMission Inspo</p>
         <p className="mt-md text-body text-text-muted">
-          Sign in with your email so your embedded library and rich-text notes stay attached to you.
+          Sign in with your email. Supabase will send a secure magic link.
         </p>
 
         <form className="mt-xl text-left" onSubmit={(event) => void handleSubmit(event)}>
@@ -59,24 +76,25 @@ export default function LoginPage() {
             </p>
           ) : null}
 
+          {message ? (
+            <p className="mt-sm text-caption text-text-muted" role="status">
+              {message}
+            </p>
+          ) : null}
+
           <button
             type="submit"
             disabled={submitting}
             className="mt-lg w-full rounded-lg bg-primary px-lg py-md text-body font-semibold text-off-white inset-button transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {submitting ? "Signing in..." : "Continue with email"}
+            {submitting ? "Sending link..." : "Send login link"}
           </button>
         </form>
 
         <p className="mt-lg text-caption leading-relaxed text-text-muted">
-          No password is required for this simple version. In Vercel, set{" "}
-          <code className="text-text-charcoal">AUTH_SECRET</code>,{" "}
-          <code className="text-text-charcoal">AUTH_TRUST_HOST=true</code>, and{" "}
-          <code className="text-text-charcoal">DATABASE_URL</code>. Build command:{" "}
-          <code className="selection:bg-charcoal-4 whitespace-pre-wrap break-all text-text-charcoal">
-            {`npm run migrate:deploy && npm run build`}
-          </code>
-          .
+          In Supabase, add this site URL to Auth redirect URLs. In Vercel, set{" "}
+          <code className="text-text-charcoal">NEXT_PUBLIC_SUPABASE_URL</code> and{" "}
+          <code className="text-text-charcoal">NEXT_PUBLIC_SUPABASE_ANON_KEY</code>.
         </p>
       </div>
     </div>

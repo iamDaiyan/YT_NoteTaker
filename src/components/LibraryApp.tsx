@@ -2,77 +2,67 @@
 
 import type { ApiVideoRow } from "@/components/VideoCard";
 import { VideoCard } from "@/components/VideoCard";
+import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { extractYouTubeId } from "@/lib/youtube";
-import { signOut } from "next-auth/react";
+import type { User } from "@supabase/supabase-js";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-const STORAGE_VIDEOS = "robo-inspo-videos";
-const STORAGE_NOTES = "robo-inspo-notes";
-
-const DEFAULT_VIDEOS: ApiVideoRow[] = [
-  { id: "F_7IPm7f1vI", youtubeId: "F_7IPm7f1vI", title: "Atlas Goes Hands On", html: "" },
-  { id: "29ECwExc-_M", youtubeId: "29ECwExc-_M", title: "All New Atlas | Boston Dynamics", html: "" },
-  { id: "fn3KWM1kuAw", youtubeId: "fn3KWM1kuAw", title: "Do You Love Me?", html: "" },
+const DEFAULT_VIDEOS = [
+  { youtubeId: "F_7IPm7f1vI", title: "Atlas Goes Hands On" },
+  { youtubeId: "29ECwExc-_M", title: "All New Atlas | Boston Dynamics" },
+  { youtubeId: "fn3KWM1kuAw", title: "Do You Love Me?" },
 ];
 
-async function refreshVideos(signal?: AbortSignal): Promise<ApiVideoRow[]> {
-  const res = await fetch("/api/videos", { cache: "no-store", signal });
-  if (!res.ok) {
-    const data = (await res.json().catch(() => ({}))) as { error?: string };
-    throw new Error(data.error ?? "Failed to load library");
+type VideoRecord = {
+  id: string;
+  youtube_id: string;
+  title: string;
+  notes?: { html?: string | null } | Array<{ html?: string | null }> | null;
+};
+
+function noteHtml(notes: VideoRecord["notes"]) {
+  if (!notes) return "";
+  if (Array.isArray(notes)) return notes[0]?.html ?? "";
+  return notes.html ?? "";
+}
+
+async function loadVideos(userId: string): Promise<ApiVideoRow[]> {
+  const { data, error } = await supabase
+    .from("videos")
+    .select("id,youtube_id,title,notes(html)")
+    .eq("user_id", userId)
+    .order("sort_order", { ascending: true })
+    .returns<VideoRecord[]>();
+
+  if (error) throw error;
+
+  if (data.length === 0) {
+    const { error: seedError } = await supabase.from("videos").insert(
+      DEFAULT_VIDEOS.map((entry, index) => ({
+        user_id: userId,
+        youtube_id: entry.youtubeId,
+        title: entry.title,
+        sort_order: index,
+      }))
+    );
+    if (seedError) throw seedError;
+    return loadVideos(userId);
   }
-  return (await res.json()) as ApiVideoRow[];
-}
 
-function isVideoRow(value: unknown): value is ApiVideoRow {
-  return (
-    typeof value === "object" &&
-    value !== null &&
-    "youtubeId" in value &&
-    typeof value.youtubeId === "string" &&
-    value.youtubeId.length === 11
-  );
-}
-
-function loadLocalVideos(): ApiVideoRow[] {
-  try {
-    const rawVideos = localStorage.getItem(STORAGE_VIDEOS);
-    const rawNotes = localStorage.getItem(STORAGE_NOTES);
-    const parsedVideos = rawVideos ? (JSON.parse(rawVideos) as unknown) : null;
-    const parsedNotes = rawNotes ? (JSON.parse(rawNotes) as Record<string, string>) : {};
-    const base = Array.isArray(parsedVideos) && parsedVideos.length > 0 ? parsedVideos : DEFAULT_VIDEOS;
-
-    return base.filter(isVideoRow).map((v) => ({
-      id: v.id || v.youtubeId,
-      youtubeId: v.youtubeId,
-      title: typeof v.title === "string" ? v.title : "Untitled",
-      html: typeof parsedNotes[v.youtubeId] === "string" ? parsedNotes[v.youtubeId] : v.html || "",
-    }));
-  } catch {
-    return DEFAULT_VIDEOS;
-  }
-}
-
-function saveLocalVideos(list: ApiVideoRow[]) {
-  localStorage.setItem(
-    STORAGE_VIDEOS,
-    JSON.stringify(list.map(({ id, youtubeId, title }) => ({ id, youtubeId, title, html: "" })))
-  );
-}
-
-function saveLocalNote(videoId: string, html: string) {
-  const raw = localStorage.getItem(STORAGE_NOTES);
-  const all = raw ? (JSON.parse(raw) as Record<string, string>) : {};
-  all[videoId] = html;
-  localStorage.setItem(STORAGE_NOTES, JSON.stringify(all));
+  return data.map((row) => ({
+    id: row.id,
+    youtubeId: row.youtube_id,
+    title: row.title,
+    html: noteHtml(row.notes),
+  }));
 }
 
 export function LibraryApp() {
+  const [user, setUser] = useState<User | null>(null);
   const [videos, setVideos] = useState<ApiVideoRow[]>([]);
   const [filter, setFilter] = useState("");
   const [loading, setLoading] = useState(true);
   const [loadErr, setLoadErr] = useState<string | null>(null);
-  const [usingLocalFallback, setUsingLocalFallback] = useState(false);
 
   const needle = filter.trim().toLowerCase();
   const filtered = useMemo(() => {
@@ -83,21 +73,32 @@ export function LibraryApp() {
   const bootstrap = useCallback(async () => {
     setLoading(true);
     setLoadErr(null);
-    const ac = new AbortController();
+
+    if (!isSupabaseConfigured) {
+      setLoadErr("Supabase is not configured. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.");
+      setLoading(false);
+      return;
+    }
+
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError) {
+      setLoadErr(sessionError.message);
+      setLoading(false);
+      return;
+    }
+
+    const sessionUser = sessionData.session?.user ?? null;
+    if (!sessionUser) {
+      window.location.href = "/login";
+      return;
+    }
+
+    setUser(sessionUser);
+
     try {
-      const data = await refreshVideos(ac.signal);
-      setVideos(data);
-      setUsingLocalFallback(false);
-    } catch (e: unknown) {
-      if ((e as { name?: string }).name !== "AbortError") {
-        setUsingLocalFallback(true);
-        setVideos(loadLocalVideos());
-        setLoadErr(
-          e instanceof Error
-            ? `${e.message}. Using browser storage until PostgreSQL is configured.`
-            : "Using browser storage until PostgreSQL is configured."
-        );
-      }
+      setVideos(await loadVideos(sessionUser.id));
+    } catch (e) {
+      setLoadErr(e instanceof Error ? e.message : "Could not load your Supabase library.");
     } finally {
       setLoading(false);
     }
@@ -111,10 +112,16 @@ export function LibraryApp() {
   const filtering = filter.trim().length > 0;
 
   async function handleAddVideo() {
+    if (!user) return;
+
     const urlInput = window.prompt("Paste a YouTube URL or 11-character video ID:");
     const id = extractYouTubeId(urlInput ?? "");
     if (!id) {
       if (urlInput !== null) window.alert("Could not parse a valid YouTube video ID.");
+      return;
+    }
+    if (videos.some((v) => v.youtubeId === id)) {
+      window.alert("That video is already in your library.");
       return;
     }
 
@@ -130,63 +137,59 @@ export function LibraryApp() {
       /* optional helper */
     }
 
-    const promptDefault = titleGuess || "New reference";
     const titleInput =
-      window.prompt("Title for this entry:", promptDefault)?.trim() || "Untitled";
+      window.prompt("Title for this entry:", titleGuess || "New reference")?.trim() || "Untitled";
 
-    if (usingLocalFallback) {
-      if (videos.some((v) => v.youtubeId === id)) {
-        window.alert("That video is already in your library.");
-        return;
-      }
-      const next = [...videos, { id, youtubeId: id, title: titleInput, html: "" }];
-      setVideos(next);
-      saveLocalVideos(next);
+    const { data, error } = await supabase
+      .from("videos")
+      .insert({
+        user_id: user.id,
+        youtube_id: id,
+        title: titleInput,
+        sort_order: videos.length,
+      })
+      .select("id,youtube_id,title")
+      .single();
+
+    if (error) {
+      window.alert(error.message);
       return;
     }
 
-    const res = await fetch("/api/videos", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ url: id, title: titleInput }),
-    });
-
-    const data = (await res.json().catch(() => ({}))) as {
-      error?: string;
-    } & Partial<ApiVideoRow>;
-
-    if (!res.ok) {
-      window.alert(data.error ?? "Could not add video.");
-      return;
-    }
-
-    if (data.id && data.youtubeId && data.title !== undefined && data.html !== undefined) {
-      setVideos((prev) => [
-        ...prev,
-        {
-          id: data.id as string,
-          youtubeId: data.youtubeId as string,
-          title: data.title as string,
-          html: data.html ?? "",
-        },
-      ]);
-      return;
-    }
-
-    window.location.reload();
+    setVideos((prev) => [
+      ...prev,
+      { id: data.id as string, youtubeId: data.youtube_id as string, title: data.title as string, html: "" },
+    ]);
   }
 
-  function onRemoved(idRemove: string) {
-    setVideos((prev) => {
-      const next = prev.filter((x) => x.id !== idRemove);
-      if (usingLocalFallback) saveLocalVideos(next);
-      return next;
-    });
+  async function onRemoved(idRemove: string) {
+    const { error } = await supabase.from("videos").delete().eq("id", idRemove);
+    if (error) {
+      window.alert(error.message);
+      return;
+    }
+    setVideos((prev) => prev.filter((x) => x.id !== idRemove));
   }
 
-  function onSaveLocalHtml(id: string, html: string) {
-    saveLocalNote(id, html);
+  async function onSaveHtml(id: string, html: string) {
+    if (!user) return;
+
+    const { error } = await supabase.from("notes").upsert(
+      {
+        video_id: id,
+        user_id: user.id,
+        html,
+      },
+      { onConflict: "video_id" }
+    );
+
+    if (error) throw error;
     setVideos((prev) => prev.map((v) => (v.id === id ? { ...v, html } : v)));
+  }
+
+  async function handleSignOut() {
+    await supabase.auth.signOut();
+    window.location.href = "/login";
   }
 
   return (
@@ -227,7 +230,7 @@ export function LibraryApp() {
               type="button"
               className="text-caption whitespace-nowrap rounded-lg border border-border-interactive px-md py-xs font-normal transition-colors hover:bg-charcoal-4 sm:py-md"
               title="Sign out"
-              onClick={() => void signOut({ redirect: true, callbackUrl: "/login" })}
+              onClick={() => void handleSignOut()}
             >
               Sign out
             </button>
@@ -255,7 +258,7 @@ export function LibraryApp() {
       <main>
         <section className="mx-auto max-w-max-width px-lg pb-md pt-lg">
           <p className="font-body text-body-large max-w-2xl text-text-muted">
-            Embed reference clips and capture notes in one place. Formatting saves to PostgreSQL behind your deployment.
+            Embed reference clips and capture notes in one place. Formatting saves to Supabase.
           </p>
         </section>
 
@@ -270,27 +273,22 @@ export function LibraryApp() {
             <p className="text-caption py-xl text-center text-text-muted">Loading your library...</p>
           ) : null}
 
-          {!loading ? (
+          {!loading && !loadErr ? (
             <div className="grid grid-cols-1 gap-xl">
               {filtered.map((row) => (
-                <VideoCard
-                  key={row.id}
-                  video={row}
-                  onRemoved={onRemoved}
-                  onSaveHtml={usingLocalFallback ? onSaveLocalHtml : undefined}
-                />
+                <VideoCard key={row.id} video={row} onRemoved={(id) => void onRemoved(id)} onSaveHtml={onSaveHtml} />
               ))}
             </div>
           ) : null}
 
-          {libraryEmpty && !loading ? (
+          {libraryEmpty && !loading && !loadErr ? (
             <p className="text-body rounded-2xl border border-dashed border-border-passive py-section-sm text-center text-text-muted">
               No videos yet. Use{" "}
               <strong className="font-semibold text-text-charcoal">Add video</strong> with a YouTube link.
             </p>
           ) : null}
 
-          {!libraryEmpty && !loading && filtering && filtered.length === 0 ? (
+          {!libraryEmpty && !loading && !loadErr && filtering && filtered.length === 0 ? (
             <p className="text-body py-xl text-center text-text-muted">No entries match your filter.</p>
           ) : null}
         </section>

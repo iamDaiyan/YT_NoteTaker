@@ -1,6 +1,7 @@
 "use client";
 
 import { buildYouTubeEmbedUrl } from "@/lib/youtube";
+import { sanitizeNoteHtml } from "@/lib/sanitize-html";
 import type { SyntheticEvent } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -32,7 +33,7 @@ export function VideoCard({
 }: Readonly<{
   video: ApiVideoRow;
   onRemoved: (id: string) => void;
-  onSaveHtml?: (id: string, html: string) => Promise<void> | void;
+  onSaveHtml: (id: string, html: string) => Promise<void> | void;
 }>) {
   const editorRef = useRef<HTMLDivElement>(null);
   const [iframeReady, setIframeReady] = useState(false);
@@ -40,26 +41,15 @@ export function VideoCard({
   const [saveStatus, setSaveStatus] = useState("");
 
   const persist = useCallback(async () => {
-    const html = editorRef.current?.innerHTML ?? "";
+    const html = sanitizeNoteHtml(editorRef.current?.innerHTML ?? "");
 
-    if (onSaveHtml) {
+    try {
       await onSaveHtml(video.id, html);
       setSaveStatus("Saved");
       window.setTimeout(() => setSaveStatus(""), 2000);
-      return;
-    }
-
-    const res = await fetch(`/api/videos/${encodeURIComponent(video.id)}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ html }),
-    });
-    if (!res.ok) {
+    } catch {
       setSaveStatus("Save failed");
-      return;
     }
-    setSaveStatus("Saved");
-    window.setTimeout(() => setSaveStatus(""), 2000);
   }, [onSaveHtml, video.id]);
 
   useEffect(() => {
@@ -86,15 +76,7 @@ export function VideoCard({
       return;
     }
 
-    if (onSaveHtml) {
-      onRemoved(video.id);
-      return;
-    }
-
-    const res = await fetch(`/api/videos/${encodeURIComponent(video.id)}`, {
-      method: "DELETE",
-    });
-    if (res.ok) onRemoved(video.id);
+    onRemoved(video.id);
   }
 
   const onToolbarMouseDown = (e: SyntheticEvent<HTMLDivElement>) => {

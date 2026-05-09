@@ -1,6 +1,4 @@
-import { Providers } from "@/components/providers";
 import "@/app/globals.css";
-import { auth } from "@/auth";
 import type { Metadata } from "next";
 import { Fira_Sans } from "next/font/google";
 import type { ReactNode } from "react";
@@ -22,15 +20,13 @@ export default async function RootLayout({
 }: Readonly<{
   children: ReactNode;
 }>) {
-  const session = await auth();
-
   return (
     <html lang="en" className="bg-background-cream antialiased selection:bg-secondary-container">
       <head>
         <meta name="referrer" content="strict-origin-when-cross-origin" />
       </head>
       <body className={`${firaSans.variable} min-h-screen bg-background-cream font-body text-text-charcoal`}>
-        <Providers session={session}>{children}</Providers>
+        {children}
       </body>
     </html>
   );
