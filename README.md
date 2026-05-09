@@ -7,7 +7,7 @@ RoboMission Inspo is a Next.js App Router app for collecting YouTube robotics re
 - Next.js 15 with the App Router
 - React 19
 - Tailwind CSS
-- NextAuth.js v5 with GitHub OAuth
+- NextAuth.js v5 with simple email credentials
 - Prisma with PostgreSQL
 
 ## Local Setup
@@ -24,8 +24,6 @@ npm install
 DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/DBNAME?sslmode=require"
 AUTH_SECRET="generate-with-openssl-rand-base64-32"
 AUTH_TRUST_HOST="true"
-GITHUB_ID="your-github-oauth-client-id"
-GITHUB_SECRET="your-github-oauth-client-secret"
 ```
 
 3. Create or update the database schema:
@@ -42,15 +40,11 @@ npm run dev
 
 Open `http://localhost:3000`.
 
-## GitHub OAuth
+## Login
 
-Create a GitHub OAuth App and configure:
+The app uses a simple email login. A visitor enters an email address, and the app stores that person's video library and notes under that email.
 
-- Homepage URL: `http://localhost:3000` for local development, or `https://YOUR_DEPLOY.vercel.app` for production.
-- Local callback URL: `http://localhost:3000/api/auth/callback/github`.
-- Production callback URL: `https://YOUR_DEPLOY.vercel.app/api/auth/callback/github`.
-
-GitHub must provide an email address for sign-in to succeed.
+This is intentionally lightweight and does not send verification emails or require a password. Use it for a small trusted app; add passwordless email verification or a real identity provider before using it for sensitive data.
 
 ## Vercel Deployment
 
@@ -60,8 +54,6 @@ Set these Vercel environment variables:
 DATABASE_URL
 AUTH_SECRET
 AUTH_TRUST_HOST=true
-GITHUB_ID
-GITHUB_SECRET
 ```
 
 Use this build command in Vercel:

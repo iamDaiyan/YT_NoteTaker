@@ -1,29 +1,45 @@
 import NextAuth from "next-auth";
-import GitHub from "next-auth/providers/github";
+import Credentials from "next-auth/providers/credentials";
+
+function normalizeEmail(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const email = value.trim().toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return null;
+  return email;
+}
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
-    GitHub({
-      authorization: {
-        params: { scope: "read:user user:email" },
+    Credentials({
+      name: "Email",
+      credentials: {
+        email: { label: "Email", type: "email" },
       },
-      clientId: process.env.GITHUB_ID ?? process.env.AUTH_GITHUB_ID ?? "",
-      clientSecret: process.env.GITHUB_SECRET ?? process.env.AUTH_GITHUB_SECRET ?? "",
+      async authorize(credentials) {
+        const email = normalizeEmail(credentials?.email);
+        if (!email) return null;
+
+        return {
+          id: email,
+          email,
+          name: email.split("@")[0],
+        };
+      },
     }),
   ],
   callbacks: {
-    async signIn({ user }) {
-      return Boolean(user?.email);
-    },
     session({ session, token }) {
       if (session.user && typeof token.email === "string") {
         session.user.email = token.email;
+        session.user.name = typeof token.name === "string" ? token.name : token.email;
       }
       return session;
     },
-    jwt({ token, profile, user }) {
-      if (user?.email) token.email = user.email;
-      else if (profile?.email && typeof profile.email === "string") token.email = profile.email;
+    jwt({ token, user }) {
+      if (user?.email) {
+        token.email = user.email;
+        token.name = user.name ?? user.email;
+      }
       return token;
     },
   },
