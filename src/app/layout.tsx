@@ -2,6 +2,7 @@ import "@/app/globals.css";
 import type { Metadata } from "next";
 import { Fira_Sans } from "next/font/google";
 import type { ReactNode } from "react";
+import { Analytics } from "@vercel/analytics/next";
 
 const firaSans = Fira_Sans({
   subsets: ["latin"],
@@ -27,6 +28,7 @@ export default async function RootLayout({
       </head>
       <body className={`${firaSans.variable} min-h-screen bg-background-cream font-body text-text-charcoal`}>
         {children}
+        <Analytics />
       </body>
     </html>
   );
